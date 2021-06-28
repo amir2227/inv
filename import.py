@@ -1,10 +1,4 @@
 from pandas import read_excel 
-import datetime
-import os
-import time
-import sys
-import re
-
 import config
 import MySQLdb
 
@@ -46,11 +40,11 @@ def import_to_database_from_excel(filepath):
         cur.execute('DROP TABLE IF EXISTS excel;')
         cur.execute("""CREATE TABLE excel (
             id INTEGER PRIMARY KEY,
-            ref VARCHAR(200),
+            phone VARCHAR(200),
             description VARCHAR(200),
-            first CHAR(30),
-            last CHAR(30),
-            date DATETIME);""")
+            first_name CHAR(30),
+            last_name CHAR(30),
+            age int);""")
         db.commit()
     except Exception as e:
         print("problem dropping excel")
@@ -63,17 +57,16 @@ def import_to_database_from_excel(filepath):
     df = read_excel(filepath)
     excel_counter = 1
     line_number = 1
-    for _, (line, ref, description, FirstName, LastName, date) in df.iterrows():
+    for _, (line, phone, description, first_name, last_name, age) in df.iterrows():
         line_number += 1
-        if not ref or (ref != ref):
-            ref = ""
+        if not phone or (phone != phone):
+            phone = ""
         if not description or (description != description):
             description = ""
-        if not date or (date != date):
-            date = "7/2/12"
+        
         try:
             cur.execute("INSERT INTO excel VALUES (%s, %s, %s, %s, %s, %s);", (
-                line, ref, description, FirstName, LastName, date)
+                line, phone, description, first_name, last_name, age)
             )
             excel_counter += 1
         except Exception as e:
@@ -94,7 +87,7 @@ def import_to_database_from_excel(filepath):
      # save the logs
     output.append(f'Inserted {excel_counter} values')
     output.reverse()
-    cur.execute("UPDATE logs SET log_value = %s WHERE log_name = 'import'", ('\n'.join(output), ))
+    cur.execute("UPage logs SET log_value = %s WHERE log_name = 'import'", ('\n'.join(output), ))
     db.commit()
 
     db.close()
