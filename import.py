@@ -40,11 +40,11 @@ def import_to_database_from_excel(filepath):
         cur.execute('DROP TABLE IF EXISTS excel;')
         cur.execute("""CREATE TABLE excel (
             id INTEGER PRIMARY KEY,
-            phone VARCHAR(200),
-            description VARCHAR(200),
-            first_name CHAR(30),
-            last_name CHAR(30),
-            age CHAR(50));""")
+            d_date VARCHAR(200),
+            USD FLOAT,EUR FLOAT,GBP FLOAT,JPY FLOAT,NZD FLOAT,AUD FLOAT,
+            CHF FLOAT,CAD FLOAT,TRY FLOAT,MXN FLOAT,ZAR FLOAT,SEK FLOAT,
+            DKK FLOAT,PLN FLOAT,SGD FLOAT,CZK FLOAT,HKD FLOAT,HUF FLOAT,
+            NOK FLOAT,RUB FLOAT,THB FLOAT,CHN FLOAT);""")
         db.commit()
     except Exception as e:
         print("problem dropping excel")
@@ -54,20 +54,22 @@ def import_to_database_from_excel(filepath):
     cur.execute("INSERT INTO logs VALUES ('db_filename', %s)", (filepath, ))
     db.commit()
 
-    df = read_excel(filepath)
+    df = read_excel(filepath, 0)
     excel_counter = 1
     line_number = 1
-    for _, (first_name, last_name, age, phone, description) in df.iterrows():
+    for _, (d_date, USD, EUR, GBP, JPY, NZD, AUD,
+            CHF, CAD, TRY, MXN, ZAR, SEK, DKK, PLN, SGD,
+            CZK, HKD, HUF, NOK, RUB, THB, CHN) in df.iterrows():
         line_number += 1
-        if not phone or (phone != phone):
-            phone = ""
-        if not description or (description != description):
-            description = ""
-        
         try:
-            cur.execute("INSERT INTO excel VALUES (%s, %s, %s, %s, %s, %s);", (
-                line_number, phone, description, first_name, last_name, age)
-            )
+            print(f'''INSERT INTO excel VALUES ({line_number}, '{d_date}', {USD},
+                {EUR}, {GBP}, {JPY}, {NZD}, {AUD}, {CHF}, {CAD}, {TRY},
+                {MXN}, {ZAR}, {SEK}, {DKK}, {PLN}, {SGD}, {CZK}, {HKD},
+                {HUF}, {NOK}, {RUB}, {THB}, {CHN});''')
+            cur.execute(f'''INSERT INTO excel VALUES ({line_number}, '{d_date}',
+                {USD},{EUR}, {GBP}, {JPY}, {NZD}, {AUD}, {CHF}, {CAD}, {TRY},
+                {MXN}, {ZAR}, {SEK}, {DKK}, {PLN}, {SGD}, {CZK}, {HKD},
+                {HUF}, {NOK}, {RUB}, {THB}, {CHN});''')
             excel_counter += 1
         except Exception as e:
             total_flashes += 1
@@ -81,13 +83,13 @@ def import_to_database_from_excel(filepath):
                 db.commit()
             except Exception as e:
                 output.append(
-                    f'Problem commiting serials into db at around record {line_number} (or previous 1000 ones); {e}')
+                    f'Problem commiting data into db at around record {line_number} (or previous 1000 ones); {e}')
     db.commit()
 
      # save the logs
     output.append(f'Inserted {excel_counter} values')
     output.reverse()
-    cur.execute("INSERT INTO logs VALUES ('Output', %s)", ('\n'.join(output), ))
+    cur.execute("INSERT INTO logs VALUES ('import', %s)", ('\n'.join(output), ))
     db.commit()
 
     db.close()
