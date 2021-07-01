@@ -1,4 +1,4 @@
-from pandas import read_excel 
+from pandas import read_excel
 import config
 import MySQLdb
 
@@ -44,7 +44,7 @@ def import_to_database_from_excel(filepath):
             description VARCHAR(200),
             first_name CHAR(30),
             last_name CHAR(30),
-            age int);""")
+            age CHAR(50));""")
         db.commit()
     except Exception as e:
         print("problem dropping excel")
@@ -57,7 +57,7 @@ def import_to_database_from_excel(filepath):
     df = read_excel(filepath)
     excel_counter = 1
     line_number = 1
-    for _, (line, phone, description, first_name, last_name, age) in df.iterrows():
+    for _, (first_name, last_name, age, phone, description) in df.iterrows():
         line_number += 1
         if not phone or (phone != phone):
             phone = ""
@@ -66,7 +66,7 @@ def import_to_database_from_excel(filepath):
         
         try:
             cur.execute("INSERT INTO excel VALUES (%s, %s, %s, %s, %s, %s);", (
-                line, phone, description, first_name, last_name, age)
+                line_number, phone, description, first_name, last_name, age)
             )
             excel_counter += 1
         except Exception as e:
@@ -87,13 +87,12 @@ def import_to_database_from_excel(filepath):
      # save the logs
     output.append(f'Inserted {excel_counter} values')
     output.reverse()
-    cur.execute("UPage logs SET log_value = %s WHERE log_name = 'import'", ('\n'.join(output), ))
+    cur.execute("INSERT INTO logs VALUES ('Output', %s)", ('\n'.join(output), ))
     db.commit()
 
     db.close()
 
     return
-
 
 
 import_to_database_from_excel('test.xls')
