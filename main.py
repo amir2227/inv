@@ -145,10 +145,14 @@ def test():
             json_data_cot = dict(zip(row_headers_cot, result3))
         for result4 in rows4:
             json_data_escore = dict(zip(row_headers_escore, result4))
-        return jsonify({'ir': json_data_ir, 'gdp': json_data_gdp, 'e_score': json_data_escore, 'cot': json_data_cot}), 200
+        return jsonify({'ir': json_data_ir, 'gdp': json_data_gdp,
+                    'e_score': json_data_escore, 'cot': json_data_cot}), 200
     except Exception as e:
         print(e)
         return jsonify({'error': f'there is some problem in database {e}'})
     finally:
         cur.close()
 
+
+if __name__ == "__main__":
+    app.run(port=5005)

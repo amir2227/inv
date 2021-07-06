@@ -11,10 +11,6 @@ MYSQL_DB_NAME = 'inv_skills'
 # /v1/CALL_BACK_TOKEN/process
 CALL_BACK_TOKEN = 'CALL BACK TOKEN'
 
-# login cedentials
-USERNAME = 'amir'
-PASSWORD = 'pass'
-
 # generate one strong secret key for flask.
 SECRET_KEY = 'lkdjfakldjafl;90cklz@^#32acaalmxc,nwsmc@#$'
 
