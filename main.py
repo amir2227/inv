@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask import jsonify
+from datetime import date
 import config
 import MySQLdb
 
@@ -111,3 +112,43 @@ def find_by_date():
         return jsonify({'error': f'there is some problem in database {e}'})
     finally:
         cur.close()
+@app.route('/test')
+def test():
+    try:
+        json_data_ir = {}
+        json_data_gdp = {}
+        json_data_cot = {}
+        json_data_escore = {}
+        today = date.today()
+        db = get_database_connection()
+        cur = db.cursor()
+        cur.execute(f"SELECT * FROM ir where d_date = '{today.year}.0'")
+        row_headers_ir = [x[0] for x in cur.description]
+        rows = cur.fetchall()
+        cur.execute(f"SELECT * FROM gdp where d_date = '{today.year}'")
+        print(f"SELECT * FROM ir where d_date = '{today.year}'")
+        row_headers_gdp = [x[0] for x in cur.description]
+        rows2 = cur.fetchall()
+        cur.execute(f"""SELECT * FROM cot where
+                    d_date <= '{today}' order by d_date desc limit 1""")
+        row_headers_cot = [x[0] for x in cur.description]
+        rows3 = cur.fetchall()
+        cur.execute(f"""SELECT * FROM e_score where
+                    d_date <= '{today}' order by d_date desc limit 1""")
+        row_headers_escore = [x[0] for x in cur.description]
+        rows4 = cur.fetchall()
+        for result in rows:
+            json_data_ir = dict(zip(row_headers_ir, result))
+        for result2 in rows2:
+            json_data_gdp = dict(zip(row_headers_gdp, result2))
+        for result3 in rows3:
+            json_data_cot = dict(zip(row_headers_cot, result3))
+        for result4 in rows4:
+            json_data_escore = dict(zip(row_headers_escore, result4))
+        return jsonify({'ir': json_data_ir, 'gdp': json_data_gdp, 'e_score': json_data_escore, 'cot': json_data_cot}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': f'there is some problem in database {e}'})
+    finally:
+        cur.close()
+
