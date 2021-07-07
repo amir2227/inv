@@ -112,7 +112,7 @@ def find_by_date():
         return jsonify({'error': f'there is some problem in database {e}'})
     finally:
         cur.close()
-@app.route('/test')
+@app.route('/api/v0/forex_get_all')
 def test():
     try:
         json_data_ir = {}
