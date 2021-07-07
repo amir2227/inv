@@ -60,7 +60,7 @@ def EScore():
         arg = request.args['field']
         db = get_database_connection()
         cur = db.cursor()
-        cur.execute('SELECT d_date,{} FROM e_score'.format(arg))
+        cur.execute('SELECT d_date,{} FROM E_SCORE'.format(arg))
         row_headers = [x[0] for x in cur.description]
         rows = cur.fetchall()
         json_data = []
@@ -80,7 +80,7 @@ def ir():
         arg = request.args['field'] 
         db = get_database_connection()
         cur = db.cursor()
-        cur.execute('SELECT d_date,{} FROM ir'.format(arg))
+        cur.execute('SELECT d_date,{} FROM IR'.format(arg))
         row_headers = [x[0] for x in cur.description]
         rows = cur.fetchall()
         json_data = []
@@ -122,18 +122,18 @@ def test():
         today = date.today()
         db = get_database_connection()
         cur = db.cursor()
-        cur.execute(f"SELECT * FROM ir where d_date = '{today.year}.0'")
+        cur.execute(f"SELECT * FROM IR where d_date = '{today.year}.0'")
         row_headers_ir = [x[0] for x in cur.description]
         rows = cur.fetchall()
-        cur.execute(f"SELECT * FROM gdp where d_date = '{today.year}'")
+        cur.execute(f"SELECT * FROM GDP where d_date = '{today.year}'")
         print(f"SELECT * FROM ir where d_date = '{today.year}'")
         row_headers_gdp = [x[0] for x in cur.description]
         rows2 = cur.fetchall()
-        cur.execute(f"""SELECT * FROM cot where
+        cur.execute(f"""SELECT * FROM COT where
                     d_date <= '{today}' order by d_date desc limit 1""")
         row_headers_cot = [x[0] for x in cur.description]
         rows3 = cur.fetchall()
-        cur.execute(f"""SELECT * FROM e_score where
+        cur.execute(f"""SELECT * FROM E_SCORE where
                     d_date <= '{today}' order by d_date desc limit 1""")
         row_headers_escore = [x[0] for x in cur.description]
         rows4 = cur.fetchall()
